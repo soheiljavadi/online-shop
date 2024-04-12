@@ -5,10 +5,9 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import user,usermanager
 
 # Register your models here.
-class UserAdmin(BaseUserAdmin):
-    list_display = []
-    ordering = ['email']
-    search_fields = ['full_name', 'email']
-    readonly_fields = ['last_login', 'date_joined']
+from django.contrib import admin
+from django.contrib.auth import get_user_model
 
-admin.site.register(user, UserAdmin)
+user=get_user_model()
+
+admin.site.register(user)

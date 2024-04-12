@@ -11,38 +11,45 @@ from django.contrib.auth.hashers import make_password
 # Create your models here.get("")
 
 class usermanager(BaseUserManager):
-    def _create_user(self,email,password,**extra_fields):
-
-        if not email:
-            raise ValueError("thw given email must be set")
-        email=self.normalize_email(email)
-        user=self.model(email=email,**extra_fields)
-        user.password=make_password(password)
+     def _create_user(self, username, password, **extra_fields):
+        """
+        Create and save a user with the given email, and password.
+        """
+        if not username:
+            raise ValueError("The given email must be set")
+        
+        user = self.model(username, **extra_fields)
+        user.password = make_password(password)
         user.save(using=self._db)
         return user
-        
-    
-    def create_user(self,email,password=None,**extra_fields):
-        extra_fields.setdefault("is_staff",False)
-        extra_fields.setdefault("is_superuser",False)
-        return self._create_user(email,password,**extra_fields)
-    def create_superuser(self,email,password=None,**extra_fields):
-        extra_fields.setdefault("is_staff",True)
-        extra_fields.setdefault("is_superuser",True)
-        if extra_fields.get("is_staff") is not True:
-            raise ValueError ("is_staff should true") 
-        if extra_fields.get("is_superuser") is not True:
-            raise ValueError ("is_superuser should true") 
-        return self._create_user(email,password,**extra_fields)
+     
+     def create_user(self, username, password=None):
         
 
+        user = self.model(username=username)
 
+        user.set_password(password)
+        user.save(using=self._db)
+
+        return user
+     
+     def create_superuser(self, username,password=None, **extra_fields):
+        user_admin=self.create_user(
+            username,
+            password=password
+        )
+        is_staff=True
+        user_admin.is_admin = True
+        user_admin.save(using=self._db)
+        return user_admin
 class user(AbstractBaseUser,PermissionsMixin):
-    first_name=models.CharField(('name'),max_length=100,blank=True)
+    id = models.AutoField(primary_key=True)
 
-    last_name=models.CharField(('last name'),max_length=100,blank=True)
+    username = models.CharField(max_length=255, unique=True)
+    password=models.CharField(('password'),max_length=6)
 
-    email=models.EmailField(("email addres"),unique=True)
+    
+    
 
     mobile=models.CharField(("mobile"),max_length=11,unique=True,blank=True,null=True)
 
@@ -51,8 +58,7 @@ class user(AbstractBaseUser,PermissionsMixin):
     date_joined=models.DateTimeField(('date joined'),default=timezone.now)
 
     objects=usermanager()
-    EMAIL_FIELD='email'
-    USERNAME_FIELD='email'
+    USERNAME_FIELD='username'
     REQUIRED_FIELDS=[]
 
     class meta:
