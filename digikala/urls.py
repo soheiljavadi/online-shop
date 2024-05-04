@@ -26,8 +26,8 @@ from django.conf import settings
 router=DefaultRouter()
 urlpatterns = [
     path('admin', admin.site.urls),
-    path('product',include('product.urls', namespace='product')),
-    path('accounts/',include('accounts.urls',namespace='accounts'))
+    path('product/',include('product.urls', namespace='product')),
+    path('account/',include('account.urls',namespace='account'))
     ,path('',include(router.urls)),
     
     

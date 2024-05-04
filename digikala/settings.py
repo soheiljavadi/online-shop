@@ -38,18 +38,20 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'product',
-    'sellers',
-    'accounts',
+    'account',
     "rest_framework",
      "rest_framework_simplejwt",
     
 ]
-# REST_FRAMEWORK={'DEFAULT_PERMISSION_CLASSES':[
-#     'rest_framework.permissions.DjangoModelpermissionsorAnonreadonly'
-#  ],
+STRIPE_SECRET_KEY = 'ss_hhh_key'
+REST_FRAMEWORK={'DEFAULT_PERMISSION_CLASSES':[
+    'rest_framework.permissions.DjangoModelpermissionsorAnonreadonly'
+ ]}
 REST_FRAMEWORK = {'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-        )}
+        'rest_framework_simplejwt.authentication.JWTAuthentication',),
+    
+
+        }
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
@@ -91,7 +93,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'digikala.urls'
-AUTH_USER_MODEL = 'accounts.User'
+AUTH_USER_MODEL = 'account.Costomuser'
 
 
 TEMPLATES = [

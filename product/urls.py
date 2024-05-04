@@ -1,9 +1,25 @@
 from django.contrib import admin
+from .views import *
 
-from .views import product_detail
+
 from django.urls import path
 app_name='product'
 urlpatterns = [
     path('admin/',admin.site.urls),
-    path('<int:pk>/',product_detail)
+        path('products/', ProductViewSet.as_view({
+        'get': 'list',   # For getting a list of products
+        'post': 'create', # For creating a new product
+         'delete': 'destroy'
+    })),
+    # Handling retrieve, update and delete actions
+    path('products/<int:pk>/', ProductapiViewSet.as_view({
+        'get': 'retrieve',    # For getting a single product
+      
+    })),
+     path('api/payments/<int:order_id>/', PaymentAPIView.as_view(), name='make_payment'),
+     path('comments/', CommentListCreate.as_view(), name='comment_list_create'),
+     path('likes/<int:product_id>/', LikeCreateDelete.as_view(), name='like_create_delete'),
+
 ]
+
+
