@@ -1,4 +1,4 @@
-
+from rest_framework.permissions import IsAuthenticated
 from .models import *
 from .serializer import *
 import stripe
@@ -13,37 +13,6 @@ from rest_framework.decorators import action
 from .serializer import  CommentModelSerializer, LikeSerializer
 from rest_framework import generics
 
-stripe.api_key = settings.STRIPE_SECRET_KEY
-class PaymentAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request, cart_id):
-        order = Cart.objects.get(id=cart_id, user=request.user)  # Make sure to check ownership and order status
-        serializer = PaymentSerializer(data=request.data)
-        
-        if serializer.is_valid():
-            token = serializer.validated_data['token']
-            try:
-                charge = stripe.Charge.create(
-                    amount=int(order.total /10),  # Amount in cents
-                    currency='usd',
-                    description=f'Charge for Order {order.id}',
-                    source=token
-                )
-
-                Payment.objects.create(
-                    order=order,
-                    stripe_charge_id=charge.id,
-                    amount=order.total
-                )
-
-                order.status = 'paid'
-                order.save()
-
-                return Response({'message': 'Payment successful'}, status=status.HTTP_201_CREATED)
-            except stripe.error.StripeError as e:
-                return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ProductViewSet (viewsets.ModelViewSet):
       queryset = product.objects.all()
@@ -78,3 +47,48 @@ class LikeCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
             return Response({'message': 'Unlike successful'}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({'error': 'Like not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+
+
+
+class cartviewset(viewsets.ModelViewSet):
+    permission_classes=[IsAuthenticated]
+    def list(self, request):
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        serializer = cartserializer(cart)
+        return Response(serializer.data)
+
+    def add_item(self, request):
+        product_id = request.data.get('product_id')
+        quantity = request.data.get('quantity', 1)
+        
+        try:
+            product = product.objects.get(id=product_id)
+        except product.DoesNotExist:
+            return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+
+        if not created:
+            cart_item.quantity += quantity
+            cart_item.save()
+
+        return Response({'status': 'item added to cart'})
+
+    def remove_item(self, request, pk=None):
+        try:
+            cart_item = CartItem.objects.get(id=pk, cart__user=request.user)
+        except CartItem.DoesNotExist:
+            return Response({'error': 'Item not found in your cart'}, status=status.HTTP_404_NOT_FOUND)
+
+        cart_item.delete()
+        return Response({'status': 'item removed from cart'})
+
+    def clear_cart(self, request):
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        cart.items.all().delete()
+        return Response({'status': 'cart cleared'})
+
+   
+    

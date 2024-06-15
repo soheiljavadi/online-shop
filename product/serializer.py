@@ -37,7 +37,6 @@ class ProductSerializer(serializers.ModelSerializer):
      brand_details = BrandSerializer(source='brand', read_only=True)
      category_details = CategorySerializer(source='category', read_only=True)
      
-    
 
      class Meta:
         model = product
@@ -51,8 +50,6 @@ class cartitemserializer(serializers.ModelSerializer):
         fields=['cart','product','total_paid','quantity']
 
 
-class PaymentSerializer(serializers.Serializer):
-    token = serializers.CharField(max_length=255)
 
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:

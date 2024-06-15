@@ -40,13 +40,14 @@ INSTALLED_APPS = [
     'product',
     'account',
     "rest_framework",
-     "rest_framework_simplejwt",
-    
+    "rest_framework_simplejwt",
+   
 ]
 STRIPE_SECRET_KEY = 'ss_hhh_key'
-REST_FRAMEWORK={'DEFAULT_PERMISSION_CLASSES':[
-    'rest_framework.permissions.DjangoModelpermissionsorAnonreadonly'
- ]}
+# REST_FRAMEWORK={'DEFAULT_PERMISSION_CLASSES':[
+#     'rest_framework.permissions.DjangoModelpermissionsorAnonreadonly']}
+
+
 REST_FRAMEWORK = {'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',),
     
