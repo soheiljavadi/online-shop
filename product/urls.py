@@ -19,6 +19,6 @@ urlpatterns = [
      
      path('comments/', CommentListCreate.as_view(), name='comment_list_create'),
      path('likes/<int:product_id>/', LikeCreateDelete.as_view(), name='like_create_delete'),
-    
+     
 ]
 

@@ -7,12 +7,13 @@ from django.contrib.auth.models import AbstractUser
 # Create your models here.
 class Costomuser(AbstractUser):
     id = models.AutoField(primary_key=True)
+    username = models.CharField(max_length=150, unique=True)
 
     is_seller = models.BooleanField(default=False)  # Indicates if the user is a seller
     
     company_name = models.CharField(max_length=255, blank=True, null=True)
    
-    first_name=models.CharField(_('first_name'),max_length=30,unique=True)
+    first_name=models.CharField(_('first_name'),max_length=30,unique=False)
 
     last_name=models.CharField(max_length=10)
 

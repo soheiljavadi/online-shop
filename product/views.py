@@ -53,42 +53,40 @@ class LikeCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
 
 class cartviewset(viewsets.ModelViewSet):
     permission_classes=[IsAuthenticated]
-    def list(self, request):
-        cart, created = Cart.objects.get_or_create(user=request.user)
-        serializer = cartserializer(cart)
+
+    def list(self,request):
+        cart=Cart.objects.get_or_create(user=request.user)
+        serializer=cartserializer(Cart)
         return Response(serializer.data)
-
-    def add_item(self, request):
-        product_id = request.data.get('product_id')
-        quantity = request.data.get('quantity', 1)
-        
+    
+    def add_item(self,request):
+        product_id=request.data.get("product_id")
+        quantity=request.data.get("quantity",1)
         try:
-            product = product.objects.get(id=product_id)
-        except product.DoesNotExist:
+            product=product.objects.get(id=product_id)
+        except:
             return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
+        
 
-        cart, created = Cart.objects.get_or_create(user=request.user)
-        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+        cart,created=Cart.objects.get_or_create(user=request.user)
+        cart_item,created=CartItem.objects.get_or_create(cart=cart, product=product)
 
         if not created:
-            cart_item.quantity += quantity
+            cart_item.quantity+=quantity
             cart_item.save()
-
-        return Response({'status': 'item added to cart'})
-
-    def remove_item(self, request, pk=None):
+            
+        return Response({'status': 'item added to cart'})  
+    def delete_item(self,request,pk=None):
         try:
-            cart_item = CartItem.objects.get(id=pk, cart__user=request.user)
-        except CartItem.DoesNotExist:
+            cart_item=CartItem.objects.get(id=pk,user=request.user)
+        except:
             return Response({'error': 'Item not found in your cart'}, status=status.HTTP_404_NOT_FOUND)
-
         cart_item.delete()
         return Response({'status': 'item removed from cart'})
 
-    def clear_cart(self, request):
-        cart, created = Cart.objects.get_or_create(user=request.user)
+    def delete_cart(self,request):
+        cart=Cart.objects.get_or_create(user=request.user)  
         cart.items.all().delete()
-        return Response({'status': 'cart cleared'})
+        return Response({'status': 'cart cleared'})   
 
-   
     
