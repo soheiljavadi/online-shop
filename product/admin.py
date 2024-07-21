@@ -6,3 +6,5 @@ Cart,CartItem
 admin.site.register(product)
 admin.site.register(Cart)
 admin.site.register(CartItem)
+admin.site.register(Category)
+

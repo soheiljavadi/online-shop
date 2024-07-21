@@ -8,7 +8,11 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,)
 from .serializer import *
 from .models import *
+
 # Create your views here.
+import logging
+
+logger = logging.getLogger(__name__)
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
